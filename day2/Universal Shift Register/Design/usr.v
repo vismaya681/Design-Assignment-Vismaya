@@ -1,47 +1,56 @@
-module usr_tb;
+module usr(input clk,rst,sin,input [3:0] pin,input [1:0] mod,input load, output reg sout,output reg [3:0] pout);
 
-reg clk_tb, rst_tb, sin_tb, load_tb;
-reg [3:0] pin_tb;
-reg [1:0] mod_tb;
-wire sout_tb;
-wire [3:0] pout_tb;
-usr dut( clk_tb,rst_tb,sin_tb,pin_tb,mod_tb,load_tb,sout_tb,pout_tb);
-initial begin
-clk_tb = 0;
+reg [3:0] temp;
+
+always @(posedge clk) begin
+    if (rst) begin
+        temp <= 4'b0000;
+        pout <= 4'b0000;
+        sout <= 1'b0;
+    end
+    else begin
+        case (mod)
+
+            2'b00: begin
+                temp <= temp >> 1'b1;
+                temp[3] <= sin;
+                sout <= temp[0];
+                pout <= temp;
+            end
+
+            2'b01: begin
+                temp <= temp >> 1'b1;
+                temp[3] <= sin;
+                pout <= temp;
+            end
+
+            2'b10: begin
+                if (load == 1'b1)
+                    temp <= pin;
+                else begin
+                    temp <= temp >> 1'b1;
+                    temp[3] <= sin;
+                    sout <= temp[0];
+                end
+                pout <= temp;
+            end
+
+            2'b11: begin
+                if (load == 1'b1)
+                    temp <= pin;
+
+                pout <= temp;
+                sout <= temp[0];
+            end
+
+            default: begin
+                temp <= 4'b0000;
+                pout <= 4'b0000;
+                sout <= 1'b0;
+             end
+
+        endcase
+    end
 end
-always #5 clk_tb = ~clk_tb;
-initial begin
-rst_tb = 1;
-sin_tb = 0;
-pin_tb = 0;
-load_tb = 0;
-mod_tb = 2'b00;
-#10;
-rst_tb = 0;
-mod_tb = 2'b00;
-sin_tb = 1; #10;
-sin_tb = 0; #10;
-sin_tb = 1; #10;
-sin_tb = 1; #10;
-mod_tb = 2'b01;
-sin_tb = 1; #10;
-sin_tb = 0; #10;
-sin_tb = 1; #10;
-sin_tb = 0; #10;
-mod_tb = 2'b10;
-load_tb = 1;
-pin_tb = 4'b1101;
-#10;
-load_tb = 0;
-sin_tb = 1; #10;
-sin_tb = 0; #10;
-sin_tb = 1; #10;
-mod_tb = 2'b11;
-load_tb = 1;
-pin_tb = 4'b1010;
-#10;
-load_tb = 0;
-#20;
-end
+
 endmodule
-
