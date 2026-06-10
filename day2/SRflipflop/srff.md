@@ -1,4 +1,4 @@
-# SR Flip-Flop (SRFF) Using Verilog
+# SR Flip-Flop (SRFF)
 
 ## Task Overview
 
