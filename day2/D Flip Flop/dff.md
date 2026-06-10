@@ -1,8 +1,8 @@
-# D Flip-Flop (DFF) Using Verilog
+# D Flip-Flop (DFF)
 
-## Project Overview
+## Task Overview
 
-This project implements a **D Flip-Flop (DFF)** using Verilog HDL and verifies its functionality through simulation in **Vivado**.
+This task implements a **D Flip-Flop (DFF)** using Verilog HDL and verifies its functionality through simulation .
 
 A D Flip-Flop is a sequential circuit used to store one bit of data. The output changes only on the positive edge of the clock signal and retains its value until the next clock edge.
 
