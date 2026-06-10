@@ -31,8 +31,10 @@ A BCD adder adds two BCD digits along with an optional carry input. If the binar
 then a correction value of 0110 (decimal 6) is added.
 4)The second Ripple Carry Adder (RCA2) performs the correction.
 5)The corrected sum appears at S, and the decimal carry is provided by Cout.
+<img width="1080" height="881" alt="bcd adder" src="https://github.com/user-attachments/assets/936dc858-433b-43c2-b6df-6646afe3544a" />
 
-  ## BCD Correction Condition
+
+## BCD Correction Condition
   
 assign adjust = Cout1 | (S1[3] & S1[2]) | (S1[3] & S1[1]);
 When adjust = 1, the value 0110 is added to the intermediate sum.
