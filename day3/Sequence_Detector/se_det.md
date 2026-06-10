@@ -370,4 +370,4 @@ when the final `0` is received.
 
 ## Conclusion
 
-The Mealy Sequence Detector for the pattern **1110** was successfully designed and simulated using Verilog HDL in Vivado. The FSM correctly transitions through the required states and generates a detection signal immediately when the sequence **1110** is received. The design demonstrates the effectiveness of Mealy machines in pattern detection applications and serves as a fundamental example of sequential circuit design.
+The Mealy Sequence Detector for the pattern **1110** was successfully designed and simulated. The FSM correctly transitions through the required states and generates a detection signal immediately when the sequence **1110** is received. The design demonstrates the effectiveness of Mealy machines in pattern detection applications and serves as a fundamental example of sequential circuit design.
