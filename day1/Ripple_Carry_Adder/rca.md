@@ -68,5 +68,59 @@ Ripple Carry Adder
 ## Design Code Explanation
 
 Internal carry signals:
+```verilog
 wire c1, c2, c3;
+```
+Each Full Adder computes:
+```verilog
+Sum  = A ⊕ B ⊕ Cin
+Carry = AB + BCin + ACin
+```
 
+## Testbench Description
+
+The testbench applies different combinations of inputs to verify the operation of the Ripple Carry Adder.
+### Test Cases
+| Test Case | A    | B    | Cin |
+| --------- | ---- | ---- | --- |
+| 1         | 0000 | 0000 | 0   |
+| 2         | 0010 | 0011 | 0   |
+| 3         | 0101 | 0010 | 1   |
+| 4         | 1111 | 0000 | 0   |
+| 5         | 1111 | 1111 | 1   |
+
+### Expected Results
+| A    | B    | Cin | Decimal Addition | Sum (S) | Cout |
+| ---- | ---- | --- | ---------------- | ------- | ---- |
+| 0000 | 0000 | 0   | 0 + 0 + 0 = 0    | 0000    | 0    |
+| 0010 | 0011 | 0   | 2 + 3 + 0 = 5    | 0101    | 0    |
+| 0101 | 0010 | 1   | 5 + 2 + 1 = 8    | 1000    | 0    |
+| 1111 | 0000 | 0   | 15 + 0 + 0 = 15  | 1111    | 0    |
+| 1111 | 1111 | 1   | 15 + 15 + 1 = 31 | 1111    | 1    |
+
+## Simulation
+### Tool Used
+-Vivado Design Suite
+-Verilog HDL
+### Steps to Run
+1. Create a new Vivado project.
+2. Add the following source files:
+-fulladd_behav.v
+-rca.v
+-rca_tb.v
+3. Set rca_tb.v as the simulation source.
+4. Run Behavioral Simulation.
+5. Observe the waveform and verify the outputs.
+
+## Sample Simulation Output
+A = 0000 B = 0000 Cin = 0 S = 0000 Cout = 0
+
+A = 0010 B = 0011 Cin = 0 S = 0101 Cout = 0
+
+A = 0101 B = 0010 Cin = 1 S = 1000 Cout = 0
+
+A = 1111 B = 0000 Cin = 0 S = 1111 Cout = 0
+
+A = 1111 B = 1111 Cin = 1 S = 1111 Cout = 1
+
+## Simulation Waveform
