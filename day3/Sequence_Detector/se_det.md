@@ -70,36 +70,8 @@ In a Mealy machine:
 | S3 | Detected "111" |
 
 ---
+<img width="922" height="612" alt="Screenshot 2026-06-10 214653" src="https://github.com/user-attachments/assets/a80d4270-801a-46e1-94e8-e478d18c221d" />
 
-### State Transitions
-
-```text
-          1
-      +------+
-      |      v
-+------+    +------+
-| IDLE |--->|  S1  |
-+------+    +------+
-   ^           |
-   |0          |1
-   |           v
-   |        +------+
-   |        |  S2  |
-   |        +------+
-   |           |
-   |           |1
-   |           v
-   |        +------+
-   +--------|  S3  |
-            +------+
-              |
-              |0
-              | Detected = 1
-              v
-            IDLE
-```
-
----
 
 ## State Encoding
 
