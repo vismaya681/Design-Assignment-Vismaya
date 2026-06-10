@@ -124,3 +124,16 @@ A = 1111 B = 0000 Cin = 0 S = 1111 Cout = 0
 A = 1111 B = 1111 Cin = 1 S = 1111 Cout = 1
 
 ## Simulation Waveform
+
+<img width="1587" height="821" alt="rca" src="https://github.com/user-attachments/assets/1c782c1e-7adf-423b-a4d9-458d3224f894" />
+
+## Applications
+-Arithmetic Logic Units (ALUs)
+-Digital Signal Processing systems
+-Microprocessors and Microcontrollers
+-Binary arithmetic operations
+-Educational implementation of binary adders
+
+## Conclusion
+
+The 4-bit Ripple Carry Adder was successfully designed using four cascaded Full Adders and verified through simulation. The simulation results matched the expected outputs, demonstrating correct carry propagation and binary addition functionality.
