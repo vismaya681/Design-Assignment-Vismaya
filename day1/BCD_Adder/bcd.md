@@ -1,6 +1,6 @@
-#BCD Adder
+# BCD Adder
 
-##Task Overview
+## Task Overview
 
 This task implements a Binary Coded Decimal (BCD) Adder using Verilog HDL and verifies its functionality through simulation in Vivado.
 
