@@ -38,7 +38,7 @@ assign adjust = Cout1 | (S1[3] & S1[2]) | (S1[3] & S1[1]);
 When adjust = 1, the value 0110 is added to the intermediate sum.
 
 ## Module Hierarchy
-
+```text
 BCD Adder
 │
 ├── RCA1 (Binary Addition)
@@ -46,6 +46,7 @@ BCD Adder
 ├── Correction Logic
 │
 └── RCA2 (Add 6 if required)
+```
 
 ## Testbench Description
 
