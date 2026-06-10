@@ -1,4 +1,5 @@
-# Mealy Sequence Detector for "1110" (Overlapping) Using Verilog
+# Mealy Sequence Detector for "1110" (Overlapping)
+
 
 ## Task Overview
 
