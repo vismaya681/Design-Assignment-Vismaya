@@ -1,3 +1,4 @@
+
 module block_ram_tb(
 
     );
@@ -24,20 +25,35 @@ module block_ram_tb(
     
     //writing data
     wrenb_tb=1;
-    wr_address_tb=8'h05;
+    wr_address_tb=3'b000;
     data_in_tb=8'hAA;
     #10;
     
-    wr_address_tb=8'h2A;
+    wr_address_tb=3'b001;
     data_in_tb=8'h4B;
     #10;
     
-    //reading data
-    wrenb_tb=0;
-    rd_address_tb=8'h05;
+    wr_address_tb=3'b010;
+    data_in_tb=8'h78;
     #10;
     
-    rd_address_tb=8'h2A;
+    wr_address_tb=3'b011;
+    data_in_tb=8'h41;
+    #10;
+    
+   
+    //reading data
+    wrenb_tb=0;
+    rd_address_tb=3'b000;
+    #10;
+    
+    rd_address_tb=3'b001;
+    #10;
+    
+    rd_address_tb=3'b010;
+    #10;
+    
+    rd_address_tb=3'b011;
     #10;
     
     //asynchronous reset
@@ -45,7 +61,9 @@ module block_ram_tb(
     arstn_tb=0;
     #10;
     
+    $finish;
     
     
     end
+    
 endmodule
