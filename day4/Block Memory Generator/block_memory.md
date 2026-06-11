@@ -309,21 +309,6 @@ data_out = 00
 
 ---
 
-## Simulation
-
-
-
-### Steps to Run
-
-1. Create a new Vivado project.
-2. Add the following source files:
-   - `block_ram.v`
-   - `block_ram_tb.v`
-3. Set `block_ram_tb.v` as the simulation source.
-4. Run **Behavioral Simulation**.
-5. Observe write, read, and reset operations.
-
----
 
 ## Simulation Waveform
 
