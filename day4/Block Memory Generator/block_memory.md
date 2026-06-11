@@ -1,4 +1,4 @@
-# 8×8 Block Memory Generator 
+# Block Memory Generator 
 
 
 
