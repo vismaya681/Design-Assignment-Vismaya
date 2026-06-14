@@ -14,7 +14,7 @@ module bcd_adder_tb();
 
 
 
-    // 1. Instantiate Interface
+    // Instantiate Interface
     bcd_adder_if bcd_if();
 
 
