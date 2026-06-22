@@ -13,9 +13,9 @@ The workspace is organized chronologically by day, and then further divided by s
 
 ```text
 Repository
- ├── Readme.md                 // Details of internship and global structure
- └── Day_[X]                   // e.g., Day_01
-     └── Assignment_[Y]        // e.g., ripplecarry
-         ├── Design/           // Contains all synthesizable <design.v> files
-         ├── Testbench/        // Contains all simulation <tb_.v> files
-         └── documentation.md  //contains the documentation of each assignments  
+ ├── Readme.md                 
+ └── Day_[X]                   
+     └── Assignment_[Y]       
+         ├── Design/           
+         ├── Testbench/        
+         └── documentation.md  
