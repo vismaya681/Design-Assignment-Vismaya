@@ -7,7 +7,7 @@
 
 This repository serves as a centralized log for my daily tasks, RTL designs, and behavioral simulations. The primary focus is on digital logic design using Verilog and simulation workflows via Vivado. 
 
-## 📂 Repository Structure
+##  Repository Structure
 
 The workspace is organized chronologically by day, and then further divided by specific assignments to keep source and simulation files strictly separated.
 
