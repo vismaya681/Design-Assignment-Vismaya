@@ -1,176 +1,315 @@
-# APB Slave Verification using SystemVerilog
-
 ## Overview
 
-This project implements and verifies an APB (Advanced Peripheral Bus) Slave using SystemVerilog. The design includes a simple APB-compliant slave memory with support for read and write transactions, address checking, error generation, and a self-checking verification environment.
+This project implements the functional verification of an **Advanced Peripheral Bus (APB) Slave** using **Basic Object-Oriented Programming (OOP)** concepts in **SystemVerilog**. The verification environment is built without UVM and follows a modular architecture consisting of a **Transaction**, **Generator**, **Driver**, **Monitor**, **Scoreboard**, **Environment**, and **Testbench**.
+
+The APB slave implements a **32-word memory**, supports both **read and write transactions**, detects **invalid address accesses**, and generates appropriate error responses.
 
 ---
 
-## Features
+> Project Structure
 
-### APB Slave Design
+```text
+APB_Verification/
+│
+├── Design/
+│   └── apb_slave.sv
+│
+├── Verification/
+│   ├── apb_if.sv
+│   ├── apb_transaction.sv
+│   ├── generator.sv
+│   ├── driver.sv
+│   ├── monitor.sv
+│   ├── scoreboard.sv
+│   ├── environment.sv
+│   └── tb.sv
+│
 
-* 32 x 32-bit internal memory.
-* Supports APB read and write operations.
-* Implements APB state machine:
+```
 
-  * IDLE
-  * SETUP
-  * ACCESS
-* Generates:
+---
 
-  * `PREADY` for transaction completion.
-  * `PSLVERR` for invalid address accesses.
-* Returns `32'hDEAD_BEEF` for out-of-range addresses.
+>Design Description
 
-### Verification Environment
+The Design Under Test (DUT) is an APB Slave with an internal **32 × 32-bit memory**.
 
-The verification environment is built using SystemVerilog OOP concepts and consists of:
+ Input Signals
 
-#### Transaction
+| Signal    | Width | Description        |
+| --------- | ----: | ------------------ |
+| `pclk`    |     1 | APB Clock          |
+| `presetn` |     1 | Active-low Reset   |
+| `paddr`   |    32 | Address Bus        |
+| `psel`    |     1 | Slave Select       |
+| `penable` |     1 | Enable Signal      |
+| `pwrite`  |     1 | Read/Write Control |
+| `pwdata`  |    32 | Write Data         |
 
-Represents an APB transaction containing:
+ Output Signals
 
-* Address (`PADDR`)
-* Write Data (`PWDATA`)
-* Read/Write Control (`PWRITE`)
-* Read Data (`PRDATA`)
-* Error Status (`PSLVERR`)
+| Signal    | Width | Description       |
+| --------- | ----: | ----------------- |
+| `pready`  |     1 | Transfer Complete |
+| `pslverr` |     1 | Error Indicator   |
+| `prdata`  |    32 | Read Data         |
 
-#### Generator
+---
 
-* Generates directed and random transactions.
-* Produces both valid and invalid addresses.
-* Sends transactions to the driver through a mailbox.
+>APB Slave Operation
 
-#### Driver
+The APB Slave uses a finite state machine with three states.
 
-* Converts transactions into APB protocol signals.
-* Drives transactions onto the DUT interface.
-* Handles APB setup and access phases.
+| State      | Description                                                                         |
+| ---------- | ----------------------------------------------------------------------------------- |
+| **IDLE**   | Waits for `psel` to become high.                                                    |
+| **SETUP**  | Waits for both `psel` and `penable` to be asserted.                                 |
+| **ACCESS** | Performs the read/write operation, generates `pready`, and checks address validity. |
 
-#### Monitor
+State Transition:
 
-* Observes DUT activity.
-* Captures completed APB transactions.
-* Sends collected information to the scoreboard.
+```text
+           +------+
+           | IDLE |
+           +------+
+               |
+             psel
+               |
+               ▼
+          +---------+
+          | SETUP   |
+          +---------+
+               |
+      psel && penable
+               |
+               ▼
+          +---------+
+          | ACCESS  |
+          +---------+
+           |      |
+       psel=1   psel=0
+           |      |
+           ▼      ▼
+        SETUP    IDLE
+```
 
-#### Scoreboard
+---
 
-* Maintains a reference memory model.
-* Compares DUT outputs against expected values.
-* Verifies:
+> Verification Architecture
 
-  * Write operations
-  * Read operations
-  * Invalid address handling
-* Reports PASS/FAIL messages.
+```text
+                Generator
+                    │
+            Mailbox (gen2drv)
+                    │
+                    ▼
+                 Driver
+                    │
+            Virtual Interface
+                    │
+                    ▼
+               APB Slave DUT
+                    │
+            Virtual Interface
+                    │
+                    ▼
+                 Monitor
+                    │
+            Mailbox (mon2scb)
+                    │
+                    ▼
+               Scoreboard
+```
 
-#### Environment
+---
 
-Integrates:
+> Verification Components
+
+1. Interface (`apb_if.sv`)
+
+The interface groups all APB signals into a single communication channel shared by the DUT and verification components.
+
+Signals include:
+
+* `pclk`
+* `presetn`
+* `paddr`
+* `psel`
+* `penable`
+* `pwrite`
+* `pwdata`
+* `prdata`
+* `pready`
+* `pslverr`
+
+The interface is connected to the Driver and Monitor through a **virtual interface**.
+
+---
+
+2. Transaction (`apb_transaction.sv`)
+
+The transaction class represents a single APB transaction.
+
+### Random Variables
+
+* `paddr`
+* `pwdata`
+* `pwrite`
+
+### Response Variables
+
+* `prdata`
+* `pslverr`
+
+ Constraint
+
+The address is generated using weighted randomization:
+
+* **80%** of transactions use **valid addresses (0–31)**.
+* **20%** of transactions use **invalid addresses (32–100)**.
+
+This ensures that both normal and error scenarios are verified.
+
+---
+
+ 3. Generator (`generator.sv`)
+
+The generator creates transactions and sends them to the driver through the `gen2drv` mailbox.
+
+Directed Transactions:
+
+1. Write `32'hAAAA_BBBB` to address `4`
+2. Read from address `4`
+
+ Random Transactions:
+
+After the directed tests, the generator creates **20 constrained-random transactions**.
+
+Each transaction is randomized and sent to the driver using:
+
+```systemverilog
+gen2drv.put(tr);
+```
+
+---
+
+ 4. Driver (`driver.sv`)
+
+The driver receives transactions from the generator and converts them into APB bus activity.
+
+The driver performs the following sequence:
+
+1. Initializes all APB control signals.
+2. Waits until `presetn` becomes high.
+3. Receives a transaction from the mailbox.
+4. Drives the **Setup Phase** (`psel = 1`, `penable = 0`).
+5. Drives the **Access Phase** (`penable = 1`).
+6. Waits until `pready` is asserted.
+7. Deasserts `psel` and `penable`.
+8. Repeats for the next transaction.
+
+---
+
+ 5. Monitor (`monitor.sv`)
+
+The monitor passively observes the APB interface.
+
+Whenever:
+
+* `psel == 1`
+* `penable == 1`
+* `pready == 1`
+
+the monitor captures:
+
+* `paddr`
+* `pwrite`
+* `pwdata`
+* `prdata`
+* `pslverr`
+
+and forwards the transaction to the scoreboard using the `mon2scb` mailbox.
+
+---
+
+ 6. Scoreboard (`scoreboard.sv`)
+
+The scoreboard acts as the reference model.
+
+It maintains its own reference memory:
+
+```systemverilog
+bit [31:0] ref_mem [32];
+```
+
+### Write Verification
+
+For every valid write transaction, the scoreboard stores the expected data into `ref_mem`.
+
+### Read Verification
+
+For every read transaction, the scoreboard compares the DUT output (`prdata`) with the expected value stored in `ref_mem`.
+
+### Invalid Address Verification
+
+For addresses greater than 31, the scoreboard checks that:
+
+* `pslverr == 1`
+* `prdata == 32'hDEAD_BEEF`
+
+### Transaction Counter
+
+The scoreboard maintains a transaction counter:
+
+```systemverilog
+trans_count
+```
+
+This counter is used by the environment to determine when all transactions have been verified.
+
+---
+
+ 7. Environment (`environment.sv`)
+
+The environment creates and connects all verification components.
+
+It instantiates:
 
 * Generator
 * Driver
 * Monitor
 * Scoreboard
 
-and manages communication using mailboxes.
+It also creates two mailboxes:
 
----
+* `gen2drv`
+* `mon2scb`
 
-## Test Scenarios
+All components are started concurrently using:
 
-### Directed Tests
-
-#### Write Transaction
-
-* Address: 4
-* Data: `0xAAAA_BBBB`
-
-#### Read Transaction
-
-* Reads back data from Address 4
-* Verifies correctness
-
-### Random Tests
-
-* 20 randomized APB transactions
-* Mix of:
-
-  * Read operations
-  * Write operations
-  * Valid addresses (0–31)
-  * Invalid addresses (32–100)
-
----
-
-## APB Transaction Flow
-
-```text
-IDLE
-  |
-  V
-SETUP (PSEL = 1, PENABLE = 0)
-  |
-  V
-ACCESS (PSEL = 1, PENABLE = 1)
-  |
-  +--> WRITE : Memory Update
-  |
-  +--> READ  : Data Returned
+```systemverilog
+fork
+    gen.run();
+    drv.run();
+    mon.run();
+    scb.run();
+join_none
 ```
 
----
-
-## Project Structure
-
-```text
-apb_slave.sv          --> APB Slave DUT
-apb_if.sv             --> APB Interface
-apb_transaction.sv    --> Transaction Class
-generator.sv          --> Stimulus Generator
-driver.sv             --> APB Driver
-monitor.sv            --> APB Monitor
-scoreboard.sv         --> Self-checking Scoreboard
-environment.sv        --> Verification Environment
-tb_top.sv             --> Top Testbench
-```
+The environment waits until the scoreboard verifies all transactions before allowing the simulation to complete.
 
 ---
 
-## Simulation Flow
+ 8. Testbench (`tb.sv`)
 
-```text
-Generator
-    |
-    V
- Driver
-    |
-    V
-   DUT
-    |
-    V
- Monitor
-    |
-    V
-Scoreboard
-```
+The top-level testbench performs the following operations:
 
-1. Generator creates transactions.
-2. Driver applies them to the DUT.
-3. DUT processes APB transfers.
-4. Monitor captures transaction results.
-5. Scoreboard checks DUT behavior against the reference model.
+* Generates the APB clock.
+* Generates the active-low reset.
+* Instantiates the APB interface.
+* Instantiates the APB Slave DUT.
+* Creates the verification environment.
+* Starts the verification process.
+* Displays the simulation start and completion messages.
+* Ends the simulation.
 
 ---
-
-
-<img width="1550" height="781" alt="WhatsApp Image 2026-06-17 at 3 46 23 PM" src="https://github.com/user-attachments/assets/16d9c1da-b697-49de-9ccf-f3ba489b7a73" />
-
-
-
-
-
-
-
